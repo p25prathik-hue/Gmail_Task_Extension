@@ -1,0 +1,11 @@
+node_modules/
+dist/
+web/android/app/build/
+web/android/.gradle/
+web/android/build/
+*.keystore
+!web/android/app/release-signing/*.keystore
+.env
+.env.*
+*.log
+.DS_Store

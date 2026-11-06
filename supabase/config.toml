@@ -1,0 +1,5 @@
+project_id = "mailtasks"
+
+[functions.analyze-email]
+# The function validates the user's session itself (works with both legacy and new JWT signing keys).
+verify_jwt = false

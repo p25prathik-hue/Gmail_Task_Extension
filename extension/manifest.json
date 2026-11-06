@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "MailTasks – Gmail to Tasks with AI",
+  "short_name": "MailTasks",
+  "version": "1.0.0",
+  "description": "A floating button in Gmail that turns the open email into a task with AI, saved to your own MailTasks account.",
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "action": { "default_popup": "popup.html", "default_title": "MailTasks", "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" } },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["storage"],
+  "host_permissions": ["https://mail.google.com/*", "https://jvsftlvdocjnxxdauuny.supabase.co/*"],
+  "content_scripts": [{ "matches": ["https://mail.google.com/*"], "js": ["content.js"], "run_at": "document_idle" }],
+  "commands": {
+    "create-task": { "suggested_key": { "default": "Alt+Shift+T" }, "description": "Create a task from the open email" }
+  }
+}

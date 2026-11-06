@@ -1,0 +1,79 @@
+name: Build Android APK & Chrome extension
+
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', 'extension/**', 'config/**', '.github/workflows/release.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: 1.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Build web bundle
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Sync Capacitor
+        working-directory: web
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: web/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+          cp app/build/outputs/apk/release/app-release.apk ../../MailTasks.apk
+
+      - name: Package Chrome extension
+        run: |
+          sed -i "s/\"version\": \"1.0.0\"/\"version\": \"1.0.${{ github.run_number }}\"/" extension/manifest.json
+          cd extension && zip -r ../mailtasks-extension.zip . -x '*.DS_Store'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mailtasks-builds
+          path: |
+            MailTasks.apk
+            mailtasks-extension.zip
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: MailTasks 1.0.${{ github.run_number }}
+          make_latest: true
+          body: |
+            **Android:** download `MailTasks.apk` on your phone and install it (allow "install unknown apps" if asked).
+            **Chrome extension:** download `mailtasks-extension.zip`, unzip it, open `chrome://extensions`, enable *Developer mode*, click *Load unpacked* and pick the unzipped folder.
+            **Web app:** https://p25prathik-hue.github.io/Gmail_Task_Extension/
+          files: |
+            MailTasks.apk
+            mailtasks-extension.zip

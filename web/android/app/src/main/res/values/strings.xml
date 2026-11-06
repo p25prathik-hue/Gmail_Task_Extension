@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MailTasks</string>
+    <string name="title_activity_main">MailTasks</string>
+    <string name="package_name">com.mailtasks.app</string>
+    <string name="custom_url_scheme">com.mailtasks.app</string>
+</resources>

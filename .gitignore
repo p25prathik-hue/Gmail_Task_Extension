@@ -4,7 +4,7 @@ web/android/app/build/
 web/android/.gradle/
 web/android/build/
 *.keystore
-!web/android/app/release-signing/*.keystore
+!web/android/app/mailtasks-debug.keystore
 .env
 .env.*
 *.log
